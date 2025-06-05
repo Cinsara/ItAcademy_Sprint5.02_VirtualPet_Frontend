@@ -1,0 +1,132 @@
+import React, { useState } from 'react';
+import {
+  TextField,
+  Button,
+  Container,
+  Typography,
+  Paper,
+  Link,
+  Box,
+} from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+
+const Register = () => {
+  const [form, setForm] = useState({
+    username: '',
+    email: '',
+    password: '',
+    weight: '',
+  });
+
+  const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch('http://localhost:8080/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: form.username,
+          email: form.email,
+          password: form.password,
+          weight: parseFloat(form.weight),
+        }),
+      });
+
+      if (response.ok) {
+        alert('Usuario registrado correctamente');
+        navigate('/');
+      } else {
+        alert('Error al registrar el usuario');
+      }
+    } catch (error) {
+      console.error('Error en el registro:', error);
+      alert('Ocurrió un error en el servidor');
+    }
+  };
+
+  return (
+    <Box
+      sx={{
+        height: '100vh',
+        width: '100vw',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        background: 'linear-gradient(to right, #fce4ec, #f3e5f5)',
+      }}
+    >
+      <Box sx={{ width: 400 }}>
+        <Paper elevation={4} sx={{ p: 4, borderRadius: 3 }}>
+          <Typography variant="h4" align="center" gutterBottom>
+            Registro
+          </Typography>
+          <form onSubmit={handleSubmit}>
+            <TextField
+              margin="normal"
+              fullWidth
+              label="Nombre de usuario"
+              name="username"
+              value={form.username}
+              onChange={handleChange}
+              required
+            />
+            <TextField
+              margin="normal"
+              fullWidth
+              label="Email"
+              name="email"
+              value={form.email}
+              onChange={handleChange}
+              required
+            />
+            <TextField
+              margin="normal"
+              fullWidth
+              label="Contraseña"
+              name="password"
+              type="password"
+              value={form.password}
+              onChange={handleChange}
+              required
+            />
+            <TextField
+              margin="normal"
+              fullWidth
+              label="Peso (kg)"
+              name="weight"
+              type="number"
+              inputProps={{ min: 0, step: 0.1 }}
+              value={form.weight}
+              onChange={handleChange}
+              required
+            />
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              sx={{ mt: 3, mb: 2 }}
+            >
+              Registrarse
+            </Button>
+            <Typography align="center">
+              ¿Ya tienes cuenta?{' '}
+              <Link onClick={() => navigate('/')} sx={{ cursor: 'pointer' }}>
+                Inicia sesión aquí
+              </Link>
+            </Typography>
+          </form>
+        </Paper>
+      </Box>
+    </Box>
+  );
+};
+
+export default Register;
+
+
