@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import {
   TextField,
   Button,
-  Container,
   Typography,
   Paper,
   Link,
   Box,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import backgroundImage from '../assets/image_register_v2.png';
 
 const Register = () => {
   const [form, setForm] = useState({
@@ -55,74 +55,84 @@ const Register = () => {
       sx={{
         height: '100vh',
         width: '100vw',
+        backgroundImage: `url(${backgroundImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        background: 'linear-gradient(to right, #fce4ec, #f3e5f5)',
       }}
     >
-      <Box sx={{ width: 400 }}>
-        <Paper elevation={4} sx={{ p: 4, borderRadius: 3 }}>
-          <Typography variant="h4" align="center" gutterBottom>
-            Registro
+      <Paper
+        elevation={4}
+        sx={{
+          p: 4,
+          borderRadius: 3,
+          width: 400,
+          backdropFilter: 'blur(4px)',
+          backgroundColor: 'rgba(255,255,255,0.8)',
+        }}
+      >
+        <Typography variant="h4" align="center" gutterBottom>
+          Registro
+        </Typography>
+        <form onSubmit={handleSubmit}>
+          <TextField
+            margin="normal"
+            fullWidth
+            label="Nombre de usuario"
+            name="username"
+            value={form.username}
+            onChange={handleChange}
+            required
+          />
+          <TextField
+            margin="normal"
+            fullWidth
+            label="Email"
+            name="email"
+            value={form.email}
+            onChange={handleChange}
+            required
+          />
+          <TextField
+            margin="normal"
+            fullWidth
+            label="Contraseña"
+            name="password"
+            type="password"
+            value={form.password}
+            onChange={handleChange}
+            required
+          />
+          <TextField
+            margin="normal"
+            fullWidth
+            label="Peso (kg)"
+            name="weight"
+            type="number"
+            inputProps={{ min: 0, step: 0.1 }}
+            value={form.weight}
+            onChange={handleChange}
+            required
+          />
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
+          >
+            Registrarse
+          </Button>
+          <Typography align="center">
+            ¿Ya tienes cuenta?{' '}
+            <Link onClick={() => navigate('/')} sx={{ cursor: 'pointer' }}>
+              Inicia sesión aquí
+            </Link>
           </Typography>
-          <form onSubmit={handleSubmit}>
-            <TextField
-              margin="normal"
-              fullWidth
-              label="Nombre de usuario"
-              name="username"
-              value={form.username}
-              onChange={handleChange}
-              required
-            />
-            <TextField
-              margin="normal"
-              fullWidth
-              label="Email"
-              name="email"
-              value={form.email}
-              onChange={handleChange}
-              required
-            />
-            <TextField
-              margin="normal"
-              fullWidth
-              label="Contraseña"
-              name="password"
-              type="password"
-              value={form.password}
-              onChange={handleChange}
-              required
-            />
-            <TextField
-              margin="normal"
-              fullWidth
-              label="Peso (kg)"
-              name="weight"
-              type="number"
-              inputProps={{ min: 0, step: 0.1 }}
-              value={form.weight}
-              onChange={handleChange}
-              required
-            />
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-            >
-              Registrarse
-            </Button>
-            <Typography align="center">
-              ¿Ya tienes cuenta?{' '}
-              <Link onClick={() => navigate('/')} sx={{ cursor: 'pointer' }}>
-                Inicia sesión aquí
-              </Link>
-            </Typography>
-          </form>
-        </Paper>
-      </Box>
+        </form>
+      </Paper>
     </Box>
   );
 };
