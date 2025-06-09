@@ -10,6 +10,7 @@ import {
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import PetAnimation from '../components/PetAnimation';
+import Navbar from '../components/Navbar';
 
 const Train = () => {
   const navigate = useNavigate();
@@ -62,20 +63,7 @@ const Train = () => {
         flexDirection: 'column',
       }}
     >
-      <AppBar position="static" sx={{ backgroundColor: '#ffffffdd', color: 'black' }}>
-        <Toolbar sx={{ justifyContent: 'space-between' }}>
-          <Typography variant="h6" sx={{ cursor: 'pointer' }} onClick={() => navigate('/home')}>
-            🐾 Mascota Virtual
-          </Typography>
-          <Box>
-            <Button color="inherit" onClick={() => navigate('/home')}>Mi mascota</Button>
-            <Button color="inherit" onClick={() => navigate('/shop')}>Shop</Button>
-            <Button color="inherit" onClick={() => navigate('/train')}>Entrenar</Button>
-            <Button color="inherit" onClick={() => navigate('/battle')}>Competir</Button>
-            <Button color="inherit" onClick={() => { localStorage.clear(); navigate('/'); }}>Cerrar sesión</Button>
-          </Box>
-        </Toolbar>
-      </AppBar>
+      <Navbar />
 
       <Container
         sx={{

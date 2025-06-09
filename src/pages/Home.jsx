@@ -16,6 +16,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import backgroundImage from '../assets/image_home.png';
 import eggImage from '../assets/egg.png';
+import Navbar from '../components/Navbar';
 
 // Imágenes de mascotas
 import cat_orange from '../assets/petAssets/pet_cat_orange.png';
@@ -154,18 +155,7 @@ const Home = () => {
     <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', position: 'relative', backgroundImage: `url(${backgroundImage})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
       <Box sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.2)', zIndex: 0 }} />
 
-      <AppBar position="static" sx={{ backgroundColor: 'white', color: 'black', zIndex: 1 }}>
-        <Toolbar sx={{ justifyContent: 'space-between' }}>
-          <Typography variant="h6">🐾 Mascota Virtual</Typography>
-          <Box>
-            <Button color="inherit" onClick={() => navigate('/home')}>Mi mascota</Button>
-            <Button color="inherit" onClick={() => navigate('/shop')}>Shop</Button>
-            <Button color="inherit" onClick={() => navigate('/train')}>Entrenar</Button>
-            <Button color="inherit" onClick={() => navigate('/battle')}>Competir</Button>
-            <Button color="inherit" onClick={handleLogout}>Cerrar sesión</Button>
-          </Box>
-        </Toolbar>
-      </AppBar>
+      <Navbar />
 
       <Container disableGutters maxWidth={false} sx={{ flexGrow: 1, position: 'relative', height: 'calc(100vh - 64px)', overflow: 'hidden', zIndex: 1 }}>
         {!hasPet ? (

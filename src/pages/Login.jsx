@@ -49,46 +49,26 @@ const Login = () => {
   }
 };
 
-
-
-  return (
-    <Box
-  sx={{
-    height: '100vh',
-    width: '100vw',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    background: 'linear-gradient(to bottom, #f0f4ff,rgb(85, 183, 201))',
-  }}
->
-  {/* Caja con imagen de fondo centrada */}
+return (
   <Box
     sx={{
-      width: '105%',
-      maxWidth: '1400px',
-      height: '100%',
-      backgroundImage: `url(${backgroundImage})`,
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      backgroundRepeat: 'no-repeat',
+      height: '100vh',
+      width: '100vw',
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
-      borderLeft: '10px solid white',
-      borderRight: '10px solid white',
-      overflow: 'hidden',
+      background: 'linear-gradient(to bottom right, #e3f2fd, #fce4ec)',
     }}
   >
-    {/* Tu caja del formulario (sin cambios) */}
     <Paper
       elevation={4}
       sx={{
         p: 4,
         borderRadius: 3,
         width: 400,
-        backdropFilter: 'blur(4px)',
-        backgroundColor: 'rgba(255,255,255,0.8)',
+        backdropFilter: 'blur(6px)',
+        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        boxShadow: '0 8px 20px rgba(0,0,0,0.1)',
       }}
     >
       <Typography variant="h4" align="center" gutterBottom>
@@ -134,9 +114,8 @@ const Login = () => {
       </form>
     </Paper>
   </Box>
-</Box>
+);
 
-  );
 };
 
 export default Login;
