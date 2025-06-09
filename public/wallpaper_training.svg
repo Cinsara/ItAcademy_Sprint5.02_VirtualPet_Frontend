@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="500" height="100" viewBox="0 0 500 100">
+  <line x1="0" y1="90" x2="500" y2="90" stroke="black" stroke-width="2"></line>
+  <path d="M40 90 Q50 80 60 90" stroke="black" fill="none" stroke-width="2"></path>
+  <path d="M100 90 Q100 70 110 70 Q120 70 120 90" stroke="black" fill="none" stroke-width="2"></path>
+  <!-- Repite con más elementos -->
+</svg>

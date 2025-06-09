@@ -19,27 +19,34 @@ const Login = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await fetch('http://localhost:8080/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: form.email, password: form.password }),
-      });
+  e.preventDefault();
+  try {
+    const response = await fetch('http://localhost:8080/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: form.email, password: form.password }),
+    });
 
-      if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem('token', data.token);
-        alert('Inicio de sesión correcto');
-        navigate('/home');
-      } else {
-        alert('Credenciales incorrectas');
-      }
-    } catch (error) {
-      console.error('Error en el login:', error);
-      alert('Error al intentar iniciar sesión');
+    if (response.ok) {
+      const pet = await response.json();
+
+      console.log("🐾 Mascota recibida directamente:", pet);
+
+      // Guarda la mascota en localStorage
+      localStorage.setItem('petData', JSON.stringify(pet));
+
+      alert('Inicio de sesión correcto');
+      navigate('/home');
+    } else {
+      alert('Credenciales incorrectas');
     }
-  };
+  } catch (error) {
+    console.error('Error en el login:', error);
+    alert('Error al intentar iniciar sesión');
+  }
+};
+
+
 
   return (
     <Box
