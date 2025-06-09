@@ -28,11 +28,14 @@ const Login = () => {
     });
 
     if (response.ok) {
-      const pet = await response.json();
+      const data = await response.json();
+      const token = data.token;
+      const pet = data.pet;
 
       console.log("🐾 Mascota recibida directamente:", pet);
 
       // Guarda la mascota en localStorage
+      localStorage.setItem('token', token);
       localStorage.setItem('petData', JSON.stringify(pet));
 
       alert('Inicio de sesión correcto');
