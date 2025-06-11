@@ -52,18 +52,15 @@ const Register = () => {
 
   return (
     <Box
-      sx={{
-        height: '100vh',
-        width: '100vw',
-        backgroundImage: `url(${backgroundImage})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}
-    >
+  sx={{
+    height: '100vh',
+    width: '100vw',
+    background: 'linear-gradient(135deg, #f0f4f8, #dfe9f3)',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  }}
+>
       <Paper
         elevation={4}
         sx={{

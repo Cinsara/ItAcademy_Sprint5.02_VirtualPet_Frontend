@@ -22,7 +22,7 @@ const Navbar = () => {
           GymPet
         </Typography>
         <Box sx={{ display: 'flex', gap: 2 }}>
-          {[['/home', 'My pet'], ['/shop', 'Shop'], ['/train', 'Train'], ['/battle', 'Compete']].map(([path, label]) => (
+          {[['/home', 'My pet'], ['/shop', 'Shop'], ['/train', 'Train'], ['/compete', 'Compete']].map(([path, label]) => (
             <Button
               key={path}
               onClick={() => navigate(path)}

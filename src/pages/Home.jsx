@@ -1,8 +1,5 @@
-// Home.jsx actualizado con ajustes visuales y estilo cartoon
 import React, { useEffect, useState } from 'react';
 import {
-  AppBar,
-  Toolbar,
   Typography,
   Button,
   Box,
@@ -12,45 +9,52 @@ import {
   DialogContent,
   DialogActions,
   TextField,
+  LinearProgress,
+  Paper,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import backgroundImage from '../assets/image_home.png';
 import eggImage from '../assets/egg.png';
 import Navbar from '../components/Navbar';
+import PetAvatar from '../components/PetAvatar';
+import petMap from '../components/PetMap';
 
-// Imágenes de mascotas
-import cat_orange from '../assets/petAssets/pet_cat_orange.png';
-import dog_purple from '../assets/petAssets/pet_dog_purple.png';
-import dog_yellow from '../assets/petAssets/pet_dog_yellow.png';
-import dragon_blue from '../assets/petAssets/pet_dragon_blue.png';
-import dragon_green from '../assets/petAssets/pet_dragon_green.png';
-import dragon_orange from '../assets/petAssets/pet_dragon_orange.png';
-
-const petMap = {
-  cat_orange,
-  dog_purple,
-  dog_yellow,
-  dragon_blue,
-  dragon_green,
-  dragon_orange,
+const getBarColor = (label, value) => {
+  if (label.includes('Salud') || label.includes('Felicidad')) {
+    if (value < 30) return 'error.main';
+    if (value < 50) return 'warning.main';
+  }
+  if (label.includes('Hambre')) {
+    if (value > 80) return 'error.main';
+    if (value > 50) return 'warning.main';
+  }
+  return 'primary.main';
 };
 
-const Stat = ({ icon, label, value }) => (
-  <Box
-    sx={{
-      textAlign: 'center',
-      borderRadius: 2,
-      backgroundColor: '#e3f2fd',
-      p: 1,
-      boxShadow: 1,
-    }}
-  >
-    <Typography variant="body1" fontWeight="bold">
-      {icon} {label}
-    </Typography>
-    <Typography variant="body2">{value}</Typography>
-  </Box>
-);
+const StatBar = ({ label, value, unit = '' }) => {
+  const barColor = getBarColor(label, value);
+
+  return (
+    <Box sx={{ mb: 2 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+        <Typography variant="body2" sx={{ fontWeight: 'bold' }}>{label}</Typography>
+        <Typography variant="body2">
+          {value}{unit}
+        </Typography>
+      </Box>
+      <LinearProgress
+        variant="determinate"
+        value={Math.min(value, 100)}
+        sx={{
+          height: 10,
+          borderRadius: 5,
+          '& .MuiLinearProgress-bar': {
+            backgroundColor: barColor,
+          },
+        }}
+      />
+    </Box>
+  );
+};
 
 const Home = () => {
   const navigate = useNavigate();
@@ -60,44 +64,36 @@ const Home = () => {
   const [petToCreate, setPetToCreate] = useState(null);
   const [petName, setPetName] = useState('');
   const [petData, setPetData] = useState(null);
-  const [justCreated, setJustCreated] = useState(false);
   const allPetKeys = Object.keys(petMap);
 
   useEffect(() => {
+    fetchPetData();
+  }, []);
+
+  const fetchPetData = async () => {
     const token = localStorage.getItem('token');
     if (!token) return;
 
-    fetch('http://localhost:8080/pet/myPet', {
-       method: 'GET',
-       headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-       },
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error('No tiene mascota');
-        return res.json();
-      })
-      .then((data) => {
-        console.log('🐾 Datos recibidos de la mascota:', data); //QUITAR LUEGO DE PROBAR
-        setHasPet(true);
-        setPetData(data);
-        localStorage.setItem('hasPet', 'true');
-        localStorage.setItem('petImage', data.type);
-        if (petMap[data.type]) {
-          setPetImage(petMap[data.type]);
-        }
-      })
-      .catch(() => {
-        setHasPet(false);
-        localStorage.removeItem('hasPet');
-        localStorage.removeItem('petImage');
+    try {
+      const res = await fetch('http://localhost:8080/pet/myPet', {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
       });
-  }, []);
 
-  const handleLogout = () => {
-    localStorage.clear();
-    navigate('/');
+      if (!res.ok) throw new Error('No tiene mascota');
+      const data = await res.json();
+      setHasPet(true);
+      setPetData(data);
+      localStorage.setItem('hasPet', 'true');
+      localStorage.setItem('petImage', data.type);
+      if (petMap[data.type]) setPetImage(petMap[data.type]);
+    } catch (error) {
+      setHasPet(false);
+      localStorage.removeItem('hasPet');
+      localStorage.removeItem('petImage');
+    }
   };
 
   const handleCreatePet = () => {
@@ -107,92 +103,119 @@ const Home = () => {
   };
 
   const confirmPetCreation = async () => {
-  try {
-    const response = await fetch('http://localhost:8080/pet/newPet', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
-      },
-      body: JSON.stringify({
-        petName,
-        type: petToCreate,
-      }),
-    });
+    try {
+      const response = await fetch('http://localhost:8080/pet/newPet', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: JSON.stringify({ petName, type: petToCreate }),
+      });
 
-    if (!response.ok) throw new Error('No se pudo crear la mascota');
+      if (!response.ok) throw new Error('No se pudo crear la mascota');
+      await fetchPetData();
+      setDialogOpen(false);
+      setPetName('');
+    } catch (error) {
+      console.error('Error al crear mascota:', error);
+    }
+  };
 
-    // 🔄 Volver a pedir la mascota desde el backend
-    const petResponse = await fetch('http://localhost:8080/pet/myPet', {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
-      },
-    });
+  const handleRemoveAccessory = async (accessoryId) => {
+    try {
+      const response = await fetch(`http://localhost:8080/pet/removeAccessory/${accessoryId}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
 
-    if (!petResponse.ok) throw new Error('Error al obtener la mascota después de crearla');
+      if (!response.ok) throw new Error("No se pudo quitar el accesorio");
 
-    const data = await petResponse.json();
-    console.log('Tipo de mascota recibida:', data.type);
-    console.log('Imagen cargada:', petMap[data.type]);
-
-    setPetData(data);
-    setHasPet(true);
-    setJustCreated(true);
-    setPetImage(petMap[data.type]);
-    localStorage.setItem('hasPet', 'true');
-    localStorage.setItem('petImage', data.type);
-    setDialogOpen(false);
-    setPetName('');
-
-    setTimeout(() => setJustCreated(false), 3000);
-  } catch (error) {
-    console.error('Error al crear mascota:', error);
-  }
-};
-
+      const updatedPet = await response.json();
+      setPetData(updatedPet);
+    } catch (error) {
+      console.error("❌ Error al quitar accesorio:", error);
+    }
+  };
 
   return (
-    <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', position: 'relative', backgroundImage: `url(${backgroundImage})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
-      <Box sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.2)', zIndex: 0 }} />
-
+    <Box
+  sx={{
+    minHeight: '100vh',
+    background: 'linear-gradient(to bottom right, #ffffff, #f0f4ff)',
+    display: 'flex',
+    flexDirection: 'column',
+  }}
+>
       <Navbar />
 
-      <Container disableGutters maxWidth={false} sx={{ flexGrow: 1, position: 'relative', height: 'calc(100vh - 64px)', overflow: 'hidden', zIndex: 1 }}>
+      <Container maxWidth="lg" sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', gap: 4 }}>
         {!hasPet ? (
-          <Box onClick={handleCreatePet} sx={{ cursor: 'pointer', position: 'absolute', left: '50%', transform: 'translateX(-50%)', bottom: '22%', display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 2 }}>
-            <img src={eggImage} alt="Huevo" style={{ width: 'min(45vw, 500px)', height: 'auto' }} />
-            <Typography variant="h4" sx={{ mt: 2, fontWeight: 'bold', color: 'white', textShadow: '2px 2px 5px black' }}>
+          <Box onClick={handleCreatePet} sx={{ cursor: 'pointer', textAlign: 'center' }}>
+            <img src={eggImage} alt="Huevo" style={{ width: 'min(45vw, 500px)' }} />
+            <Typography variant="h4" sx={{ mt: 2, fontWeight: 'bold' }}>
               ¡Clica aquí para que nazca tu pet!
             </Typography>
           </Box>
         ) : (
-          <Box sx={{ position: 'relative', width: '100%', height: '100%' }}>
-
-            <Box sx={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', bottom: '22%', zIndex: 1 }}>
-              <img src={petImage} alt="Tu mascota" style={{ width: 'min(45vw, 500px)', height: 'auto' }} />
+          <>
+            <Box sx={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
+              <PetAvatar type={petData?.type} accessories={petData?.accessories} />
             </Box>
 
             {petData && (
-              <Box sx={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', bottom: '5%', zIndex: 2, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1, backgroundColor: 'rgba(255,255,255,0.95)', borderRadius: 3, p: 2, minWidth: '280px', maxWidth: '90vw' }}>
-                <Typography variant="h6" sx={{ gridColumn: 'span 3', textAlign: 'center', fontFamily: 'Fredoka, sans-serif', fontWeight: 800, fontSize: '1.6rem', color: '#212121', mb: 1 }}>
-                  {petData.name}
-                </Typography>
-                <Stat icon="❤️" label="Felicidad" value={petData.happiness} />
-                <Stat icon="🩺" label="Salud" value={petData.health} />
-                <Stat icon="🍖" label="Hambre" value={petData.hunger} />
-                <Stat icon="💪" label="Fuerza" value={petData.strength} />
-                <Stat icon="🏆" label="Victorias" value={petData.victories} />
-                <Stat icon="⚖️" label="Peso" value={petData.weight} />
+              <Box sx={{ width: '320px' }}>
+                <Paper elevation={3} sx={{ p: 3, borderRadius: 3 }}>
+                  <Typography variant="h6" sx={{ mb: 2, textAlign: 'center', fontWeight: 'bold' }}>
+                    {petData.name}
+                  </Typography>
+                  <StatBar label="❤️ Felicidad" value={petData.happiness} />
+                  <StatBar label="🩺 Salud" value={petData.health} />
+                  <StatBar label="🍖 Hambre" value={petData.hunger} />
+                  <StatBar label="💪 Fuerza" value={petData.strength} />
+                  <StatBar label="🏆 Victorias" value={petData.victories} />
+                  <StatBar label="⚖️ Peso" value={petData.weight} unit="kg" />
+                </Paper>
+
+                {petData?.accessories?.length > 0 && (
+                  <Box sx={{ mt: 3 }}>
+                    <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>
+                      Accesorios equipados:
+                    </Typography>
+                    {petData.accessories.map((acc) => (
+                      <Box key={acc.id} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+                        <Typography>{acc.name}</Typography>
+                        <Button
+                          size="small"
+                          variant="outlined"
+                          color="error"
+                          onClick={() => handleRemoveAccessory(acc.id)}
+                        >
+                          Quitar
+                        </Button>
+                      </Box>
+                    ))}
+                  </Box>
+                )}
               </Box>
             )}
-          </Box>
+          </>
         )}
       </Container>
 
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
         <DialogTitle>¡Ponle un nombre a tu mascota!</DialogTitle>
         <DialogContent>
-          <TextField autoFocus margin="dense" label="Nombre de la mascota" fullWidth value={petName} onChange={(e) => setPetName(e.target.value)} />
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Nombre de la mascota"
+            fullWidth
+            value={petName}
+            onChange={(e) => setPetName(e.target.value)}
+          />
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setDialogOpen(false)}>Cancelar</Button>

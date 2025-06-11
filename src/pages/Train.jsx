@@ -28,18 +28,9 @@ const Train = () => {
   }, []);
 
   useEffect(() => {
-    if (isRunning) {
+  if (isRunning) {
     intervalRef.current = setInterval(() => {
-      setSeconds((prevSeconds) => {
-        const nextSeconds = prevSeconds + 1;
-
-        // Añadir 1 XP por minuto
-        if (nextSeconds % 60 === 0) {
-          setXp((prevXp) => Math.min(prevXp + 1, 100));
-        }
-
-        return nextSeconds;
-      });
+      setSeconds((prev) => prev + 1);
     }, 1000);
   } else if (intervalRef.current) {
     clearInterval(intervalRef.current);
@@ -47,6 +38,14 @@ const Train = () => {
 
   return () => clearInterval(intervalRef.current);
 }, [isRunning]);
+
+useEffect(() => {
+  if (seconds > 0 && seconds % 60 === 0) {
+    // Gana 1 XP por minuto
+    setXp((prev) => Math.min(prev + 1, 100));
+  }
+}, [seconds]);
+
 
   const formatTime = (totalSeconds) => {
     const minutes = Math.floor(totalSeconds / 60);
