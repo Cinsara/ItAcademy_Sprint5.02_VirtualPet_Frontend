@@ -22,26 +22,29 @@ const Compete = () => {
   const [battleHistory, setBattleHistory] = useState([]);
 
   useEffect(() => {
-    try {
-      const storedPet = localStorage.getItem('petData');
-      if (!storedPet || storedPet === 'undefined') {
-        console.warn("⚠️ petData no válido");
-        localStorage.removeItem('petData');
-        return;
-      }
+  const fetchPet = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
 
-      const parsedPet = JSON.parse(storedPet);
-      if (parsedPet && typeof parsedPet === 'object' && parsedPet.name) {
-        setPet(parsedPet);
-      } else {
-        console.warn("⚠️ petData mal formateado");
-        localStorage.removeItem('petData');
-      }
-    } catch (err) {
-      console.error("❌ Error leyendo petData:", err);
-      localStorage.removeItem('petData');
+    try {
+      const response = await fetch('http://localhost:8080/pet/myPet', {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) throw new Error('Mascota no encontrada');
+      const data = await response.json();
+      setPet(data);
+    } catch (error) {
+      console.error('❌ Error al cargar mascota:', error);
     }
-  }, []);
+  };
+
+  fetchPet();
+}, []);
+
 
   const getResultIcon = (result) => {
     switch (result) {
@@ -85,6 +88,11 @@ const Compete = () => {
     }
 
     console.log("📦 Datos parseados:", gameData);
+
+    if (gameData?.challenger) {
+        setPet(gameData.challenger);
+        localStorage.setItem('petData', JSON.stringify(gameData.challenger));
+    }
 
     setResult(gameData);
     setOpponent(gameData.opponent || null);
@@ -149,21 +157,31 @@ const Compete = () => {
   }
 }}>
     <CardContent sx={{ textAlign: 'center', minHeight: 400 }}>
-                <Typography variant="h6" sx={{ color: '#fff', mb: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <EmojiEvents sx={{ mr: 1 }} /> Your pet
-                </Typography>
+            
                 {pet ? (
                   <>
                     <Badge
                       overlap="circular"
                       anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                       badgeContent={
-                        <Chip label={`${pet.victories} wins`} size="small" color="success" sx={{ color: 'white' }} />
+                        <Chip label={`${pet.victories} wins`} size="big" color="success" sx={{ color: 'white' }} />
                       }
                     >
                       <PetAvatar type={pet.type} />
                     </Badge>
-                    <Typography variant="h5" sx={{ mt: 2, mb: 1, color: '#fff' }}>{pet.name}</Typography>
+                    <Typography
+                        variant="h4"
+                        sx={{
+                            mt: 2,
+                            mb: 1,
+                            color: '#fff',
+                            fontWeight: 'bold',
+                            textShadow: '1px 1px 3px rgba(0,0,0,0.5)',
+                            }}
+                    >
+                    {pet.name}
+                    </Typography>
+
                     <Grid container spacing={1} sx={{ mt: 1 }} justifyContent="center">
                       <Grid item xs={5}><Typography variant="body2" sx={{ color: '#fff' }}>💪 Strength</Typography><Typography variant="body1" fontWeight="bold" sx={{ color: '#fff' }}>{pet.strength}</Typography></Grid>
                       <Grid item xs={5}><Typography variant="body2" sx={{ color: '#fff' }}>❤️ Health</Typography><Typography variant="body1" fontWeight="bold" sx={{ color: '#fff' }}>{pet.health}</Typography></Grid>
@@ -190,18 +208,6 @@ const Compete = () => {
   }
 }}>
     <CardContent sx={{ textAlign: 'center', minHeight: 400 }}>
-      <Typography
-        variant="h6"
-        sx={{
-        color: '#fff',
-          mb: 2,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <EmojiEvents sx={{ mr: 1 }} /> Oponente
-      </Typography>
 
       {opponent ? (
         <>
@@ -211,7 +217,7 @@ const Compete = () => {
             badgeContent={
               <Chip
                 label={`${opponent.victories} wins`}
-                size="medium"
+                size="big"
                 color="error"
                 sx={{ color: 'white' }}
               />
@@ -219,9 +225,19 @@ const Compete = () => {
           >
             <PetAvatar type={opponent.type} />
           </Badge>
-          <Typography variant="h5" sx={{ mt: 2, mb: 1 }}>
-            {opponent.name}
-          </Typography>
+          <Typography
+            variant="h4"
+             sx={{
+                mt: 2,
+                mb: 1,
+                color: '#fff',
+                fontWeight: 'bold',
+                extShadow: '1px 1px 3px rgba(0,0,0,0.5)',
+            }}
+>
+  {opponent.name}
+</Typography>
+
           <Grid container spacing={1} sx={{ mt: 1 }} justifyContent="center">
             <Grid item xs={5}>
               <Typography variant="body2" sx={{ color: '#fff' }}>💪 Strength</Typography>
@@ -263,14 +279,17 @@ const Compete = () => {
           <img
   src={opponentPlaceholder}
   alt="Oponente desconocido"
-  style={{ width: 500, opacity: 0.5, marginBottom: 16 }}
+  style={{ width: 500, opacity: 0.5, marginBottom: 16, marginTop: 80 }}
 />
-          <Typography variant="h6" sx={{ color: '#fff', fontWeight: 'bold' }}>
+          <Box sx={{ textAlign: 'center', mb: 9 }}>
+  <Typography variant="h6" sx={{ color: '#fff', fontWeight: 'bold', display: 'block', mt: 12 }}>
     Presiona "PELEAR!"
   </Typography>
-  <Typography variant="h6" sx={{ color: '#fff' }}>
+  <Typography variant="h6" sx={{ color: '#fff', mt: 1, display: 'block' }}>
     para comenzar la batalla
   </Typography>
+</Box>
+
         </Box>
       )}
     </CardContent>

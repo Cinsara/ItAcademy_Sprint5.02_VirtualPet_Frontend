@@ -1,7 +1,7 @@
 const accessoryPositionMap = {
-  dragon_gold: {
+  pet_dog: {
     glasses: {
-      top: '10%',
+      top: '17%',
       left: '20%',
       width: '45%',
     },
@@ -9,13 +9,45 @@ const accessoryPositionMap = {
       top: '5%',
       left: '30%',
       width: '40%',
+    },
+    teddy_bear: {
+      top: '55%',
+      left: '80%',
+      width: '40%',
     }
   },
-  cat_orange: {
+  pet_dinosaur: {
     glasses: {
-      top: '18%',
-      left: '37%',
-      width: '30%',
+      top: '10%',
+      left: '15%',
+      width: '40%',
+    },
+    hat: {
+      top: '1%',
+      left: '25%',
+      width: '40%',
+    },
+    teddy_bear: {
+      top: '55%',
+      left: '80%',
+      width: '40%',
+    }
+  },
+  yoga_cat: {
+    glasses: {
+      top: '20%',
+      left: '27%',
+      width: '40%',
+    },
+    hat: {
+      top: '1%',
+      left: '25%',
+      width: '40%',
+    },
+    teddy_bear: {
+      top: '55%',
+      left: '80%',
+      width: '40%',
     }
   },
   // más mascotas...

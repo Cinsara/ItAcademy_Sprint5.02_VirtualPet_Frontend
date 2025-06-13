@@ -8,7 +8,6 @@ import {
   Box,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import backgroundImage from '../assets/image_register_v2.png';
 
 const Register = () => {
   const [form, setForm] = useState({

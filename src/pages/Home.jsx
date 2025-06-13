@@ -11,6 +11,7 @@ import {
   TextField,
   LinearProgress,
   Paper,
+  CircularProgress,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import eggImage from '../assets/egg.png';
@@ -65,36 +66,43 @@ const Home = () => {
   const [petName, setPetName] = useState('');
   const [petData, setPetData] = useState(null);
   const allPetKeys = Object.keys(petMap);
+  const [loadingPet, setLoadingPet] = useState(true);
 
   useEffect(() => {
     fetchPetData();
   }, []);
 
   const fetchPetData = async () => {
-    const token = localStorage.getItem('token');
-    if (!token) return;
+  const token = localStorage.getItem('token');
+  if (!token) {
+    setLoadingPet(false);
+    return;
+  }
 
-    try {
-      const res = await fetch('http://localhost:8080/pet/myPet', {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      });
+  try {
+    const res = await fetch('http://localhost:8080/pet/myPet', {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-      if (!res.ok) throw new Error('No tiene mascota');
-      const data = await res.json();
-      setHasPet(true);
-      setPetData(data);
-      localStorage.setItem('hasPet', 'true');
-      localStorage.setItem('petImage', data.type);
-      if (petMap[data.type]) setPetImage(petMap[data.type]);
-    } catch (error) {
-      setHasPet(false);
-      localStorage.removeItem('hasPet');
-      localStorage.removeItem('petImage');
-    }
-  };
+    if (!res.ok) throw new Error('No tiene mascota');
+
+    const data = await res.json();
+    setHasPet(true);
+    setPetData(data);
+    localStorage.setItem('hasPet', 'true');
+    localStorage.setItem('petImage', data.type);
+    if (petMap[data.type]) setPetImage(petMap[data.type]);
+  } catch (error) {
+    setHasPet(false);
+    localStorage.removeItem('hasPet');
+    localStorage.removeItem('petImage');
+  } finally {
+    setLoadingPet(false);
+  }
+};
 
   const handleCreatePet = () => {
     const randomKey = allPetKeys[Math.floor(Math.random() * allPetKeys.length)];
@@ -151,59 +159,85 @@ const Home = () => {
 >
       <Navbar />
 
-      <Container maxWidth="lg" sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', gap: 4 }}>
-        {!hasPet ? (
-          <Box onClick={handleCreatePet} sx={{ cursor: 'pointer', textAlign: 'center' }}>
-            <img src={eggImage} alt="Huevo" style={{ width: 'min(45vw, 500px)' }} />
-            <Typography variant="h4" sx={{ mt: 2, fontWeight: 'bold' }}>
-              ¡Clica aquí para que nazca tu pet!
-            </Typography>
-          </Box>
-        ) : (
-          <>
-            <Box sx={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
-              <PetAvatar type={petData?.type} accessories={petData?.accessories} />
-            </Box>
-
-            {petData && (
-              <Box sx={{ width: '320px' }}>
-                <Paper elevation={3} sx={{ p: 3, borderRadius: 3 }}>
-                  <Typography variant="h6" sx={{ mb: 2, textAlign: 'center', fontWeight: 'bold' }}>
-                    {petData.name}
-                  </Typography>
-                  <StatBar label="❤️ Felicidad" value={petData.happiness} />
-                  <StatBar label="🩺 Salud" value={petData.health} />
-                  <StatBar label="🍖 Hambre" value={petData.hunger} />
-                  <StatBar label="💪 Fuerza" value={petData.strength} />
-                  <StatBar label="🏆 Victorias" value={petData.victories} />
-                  <StatBar label="⚖️ Peso" value={petData.weight} unit="kg" />
-                </Paper>
-
-                {petData?.accessories?.length > 0 && (
-                  <Box sx={{ mt: 3 }}>
-                    <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>
-                      Accesorios equipados:
-                    </Typography>
-                    {petData.accessories.map((acc) => (
-                      <Box key={acc.id} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
-                        <Typography>{acc.name}</Typography>
-                        <Button
-                          size="small"
-                          variant="outlined"
-                          color="error"
-                          onClick={() => handleRemoveAccessory(acc.id)}
-                        >
-                          Quitar
-                        </Button>
-                      </Box>
-                    ))}
-                  </Box>
-                )}
-              </Box>
-            )}
-          </>
+      <Container
+  maxWidth="lg"
+  sx={{
+    flexGrow: 1,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
+    gap: 4
+  }}
+>
+  {loadingPet ? (
+    <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+      <CircularProgress />
+      <Typography sx={{ mt: 2, ml: 2 }}>Cargando tu mascota...</Typography>
+    </Box>
+  ) : !hasPet ? (
+    <Box onClick={handleCreatePet} sx={{ cursor: 'pointer', textAlign: 'center' }}>
+      <img src={eggImage} alt="Huevo" style={{ width: 'min(45vw, 500px)' }} />
+      <Typography variant="h4" sx={{ mt: 2, fontWeight: 'bold' }}>
+        ¡Clica aquí para que nazca tu pet!
+      </Typography>
+    </Box>
+  ) : (
+    <>
+      <Box sx={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
+        {petData?.type && (
+          <PetAvatar type={petData.type} accessories={petData.accessories} />
         )}
-      </Container>
+      </Box>
+
+      {petData && (
+        <Box sx={{ width: '320px' }}>
+          <Paper elevation={3} sx={{ p: 3, borderRadius: 3 }}>
+            <Typography variant="h6" sx={{ mb: 2, textAlign: 'center', fontWeight: 'bold' }}>
+              {petData.name}
+            </Typography>
+            <StatBar label="❤️ Felicidad" value={petData.happiness} />
+            <StatBar label="🩺 Salud" value={petData.health} />
+            <StatBar label="🍖 Hambre" value={petData.hunger} />
+            <StatBar label="💪 Fuerza" value={petData.strength} />
+            <StatBar label="🏆 Victorias" value={petData.victories} />
+            <StatBar label="⚖️ Peso" value={petData.weight} unit="kg" />
+          </Paper>
+
+          {petData?.accessories?.length > 0 && (
+            <Box sx={{ mt: 3 }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>
+                Accesorios equipados:
+              </Typography>
+              {petData.accessories.map((acc) => (
+                <Box
+                  key={acc.id}
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    mb: 1
+                  }}
+                >
+                  <Typography>{acc.name}</Typography>
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    color="error"
+                    onClick={() => handleRemoveAccessory(acc.id)}
+                  >
+                    Quitar
+                  </Button>
+                </Box>
+              ))}
+            </Box>
+          )}
+        </Box>
+      )}
+    </>
+  )}
+</Container>
+
 
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
         <DialogTitle>¡Ponle un nombre a tu mascota!</DialogTitle>

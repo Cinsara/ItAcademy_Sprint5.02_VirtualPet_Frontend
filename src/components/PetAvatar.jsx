@@ -3,7 +3,9 @@ import petMap from './PetMap';
 import accessoryPositionMap from './accessoryPositionMap';
 
 const PetAvatar = ({ type, accessories = [] }) => {
-  const petImage = petMap[type] || '/default-pet.png';
+  if (!type || !petMap[type]) return null;
+  const petImage = petMap[type];
+
 
   return (
     <div style={{ position: 'relative', width: '100%', maxWidth: 500 }}>
@@ -13,7 +15,7 @@ const PetAvatar = ({ type, accessories = [] }) => {
         style={{
           width: '100%',
           height: 'auto',
-          imageRendering: 'pixelated',
+          imageRendering: 'auto',
           display: 'block',
         }}
       />
@@ -30,6 +32,7 @@ const PetAvatar = ({ type, accessories = [] }) => {
               left: pos.left || '30%',
               width: pos.width || '40%',
               pointerEvents: 'none',
+              imageRendering: 'auto',
             }}
           />
         );

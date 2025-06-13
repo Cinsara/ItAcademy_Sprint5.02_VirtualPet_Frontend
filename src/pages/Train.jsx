@@ -7,9 +7,9 @@ import {
   Box,
   Container,
   LinearProgress,
+  Paper,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import PetAnimation from '../components/PetAnimation';
 import Navbar from '../components/Navbar';
 
 const Train = () => {
@@ -28,24 +28,22 @@ const Train = () => {
   }, []);
 
   useEffect(() => {
-  if (isRunning) {
-    intervalRef.current = setInterval(() => {
-      setSeconds((prev) => prev + 1);
-    }, 1000);
-  } else if (intervalRef.current) {
-    clearInterval(intervalRef.current);
-  }
+    if (isRunning) {
+      intervalRef.current = setInterval(() => {
+        setSeconds((prev) => prev + 1);
+      }, 1000);
+    } else if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
 
-  return () => clearInterval(intervalRef.current);
-}, [isRunning]);
+    return () => clearInterval(intervalRef.current);
+  }, [isRunning]);
 
-useEffect(() => {
-  if (seconds > 0 && seconds % 60 === 0) {
-    // Gana 1 XP por minuto
-    setXp((prev) => Math.min(prev + 1, 100));
-  }
-}, [seconds]);
-
+  useEffect(() => {
+    if (seconds > 0 && seconds % 60 === 0) {
+      setXp((prev) => Math.min(prev + 1, 100));
+    }
+  }, [seconds]);
 
   const formatTime = (totalSeconds) => {
     const minutes = Math.floor(totalSeconds / 60);
@@ -57,7 +55,10 @@ useEffect(() => {
     <Box
       sx={{
         minHeight: '100vh',
-        background: 'linear-gradient(135deg, #c2e9fb 0%, #a1c4fd 100%)',
+        backgroundImage: 'url("/src/assets/train/trainning.png")',
+        backgroundRepeat: 'no-repeat',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
         display: 'flex',
         flexDirection: 'column',
       }}
@@ -74,147 +75,166 @@ useEffect(() => {
           textAlign: 'center',
         }}
       >
-        {petData?.type && (
-          <Box
+        <Paper
+          elevation={6}
+          sx={{
+            p: 4,
+            borderRadius: 4,
+            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+            backdropFilter: 'blur(8px)',
+            border: '1px solid rgba(255, 255, 255, 0.2)',
+            width: '100%',
+            maxWidth: '600px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: 3,
+          }}
+        >
+          <Typography
+            variant="h3"
             sx={{
-              width: '100%',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              mt: 4,
-              mb: 2,
-              position: 'relative',
+              color: '#2E7D32',
+              fontWeight: 'bold',
+              fontFamily: 'Orbitron, sans-serif',
+              textShadow: '1px 1px 2px rgba(0,0,0,0.1)',
             }}
           >
-            {/* Dragón grande */}
+            {isRunning ? 'Entrenando...' : '¡Vamos a entrenar!'}
+          </Typography>
+
+          {isRunning && (
             <Box
               sx={{
-                width: '180px',
-                height: '180px',
-                animation: isRunning ? 'move-across 4s linear infinite' : 'none',
-                transformOrigin: 'center center',
-                zIndex: 2,
-                position: 'relative',
-                top: '120px',
-                left: '20px', 
+                backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                p: 2,
+                borderRadius: 3,
+                width: '100%',
               }}
             >
-              <PetAnimation type={petData.type} />
+              <Typography
+                variant="h4"
+                sx={{
+                  color: '#2E7D32',
+                  fontFamily: 'Orbitron, sans-serif',
+                  fontWeight: 'bold',
+                }}
+              >
+                ⏱️ {formatTime(seconds)}
+              </Typography>
             </Box>
+          )}
 
-            {/* Línea SVG más grande */}
-            <Box
+          {/* Barra de XP mejorada */}
+          <Box sx={{ width: '100%', mt: 2 }}>
+            <Typography 
+              variant="h6" 
+              sx={{ 
+                mb: 2, 
+                fontWeight: 'bold',
+                color: '#333',
+              }}
+            >
+              Experiencia ganada: {xp} XP
+            </Typography>
+            <LinearProgress
+              variant="determinate"
+              value={xp}
               sx={{
-                width: '100%',
-                height: '120px',
-                backgroundImage: 'url("/wallpaper_training.svg")',
-                backgroundRepeat: 'repeat-x',
-                backgroundSize: 'auto 100%',
-                backgroundPosition: 'bottom',
-                animation: isRunning ? 'scroll-line 4s linear infinite' : 'none',
-                zIndex: 1,
+                height: 16,
+                borderRadius: 8,
+                backgroundColor: '#e0e0e0',
+                '& .MuiLinearProgress-bar': {
+                  borderRadius: 8,
+                  backgroundColor: '#4caf50',
+                  backgroundImage: 'linear-gradient(to right, #4caf50, #81c784)',
+                },
               }}
             />
           </Box>
-        )}
 
-        <Typography
-          variant="h3"
-          sx={{
-            mt: 1,
-            color: '#222',
-            fontWeight: 'bold',
-            fontFamily: 'Orbitron, sans-serif',
-            textShadow: '1px 1px 3px rgba(0,0,0,0.05)',
-          }}
-        >
-          {isRunning ? 'Entrenando...' : '¡Vamos a entrenar!'}
-        </Typography>
+          {/* Botones mejorados */}
+          <Box sx={{ mt: 3, display: 'flex', gap: 3, width: '100%' }}>
+            <Button
+              variant="contained"
+              color="success"
+              onClick={() => {
+                setSeconds(0);
+                setXp(0);
+                setIsRunning(true);
+              }}
+              disabled={isRunning}
+              sx={{
+                px: 5,
+                py: 2,
+                fontSize: '1.1rem',
+                fontWeight: 'bold',
+                borderRadius: 3,
+                flex: 1,
+                boxShadow: 3,
+                '&:hover': {
+                  backgroundColor: '#388e3c',
+                },
+              }}
+              size="large"
+            >
+              Comenzar
+            </Button>
+            <Button
+              variant="contained"
+              color="error"
+              onClick={async () => {
+                setIsRunning(false);
 
-        {isRunning && (
-          <Typography
-            variant="h5"
-            sx={{
-              color: '#4caf50',
-              fontFamily: 'Orbitron, sans-serif',
-              fontSize: '1.6rem',
-            }}
-          >
-            ⏱️ {formatTime(seconds)}
-          </Typography>
-        )}
+                try {
+                  const token = localStorage.getItem('token');
+                  const response = await fetch('http://localhost:8080/pet/trainPet', {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                      Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({ durationInSeconds: seconds }),
+                  });
 
-        {/* Barra de XP mejorada */}
-        <Box sx={{ width: '90%', maxWidth: 500, mt: 2 }}>
-          <Typography variant="body1" sx={{ mb: 1, fontWeight: 'bold', fontSize: '1.1rem' }}>
-            Experiencia ganada: {xp} XP
-          </Typography>
-          <LinearProgress
-            variant="determinate"
-            value={xp}
-            sx={{
-              height: 14,
-              borderRadius: 7,
-              backgroundColor: '#cfd8dc',
-              '& .MuiLinearProgress-bar': {
-                backgroundColor: '#4caf50',
-              },
-            }}
-          />
-        </Box>
+                  if (response.ok) {
+                    const updatedPet = await response.json();
+                    console.log('Mascota actualizada:', updatedPet);
 
-        {/* Botones mejorados */}
-        <Box sx={{ mt: 5, display: 'flex', gap: 3 }}>
-          <Button
-            variant="contained"
-            color="success"
-            onClick={() => {
-              setSeconds(0);
-              setXp(0);
-              setIsRunning(true);
-            }}
-            disabled={isRunning}
-            sx={{ px: 5, py: 1.8, fontSize: '1rem', fontWeight: 'bold' }}
-          >
-            Start
-          </Button>
-          <Button
-  variant="contained"
-  color="error"
-  onClick={async () => {
-    setIsRunning(false);
+                    // 🔁 ACTUALIZA EL LOCAL STORAGE Y EL ESTADO
+                    localStorage.setItem('petData', JSON.stringify(updatedPet));
+                    setPetData(updatedPet);
 
-    try {
-      const token = localStorage.getItem('token'); // solo si usas JWT
-      const response = await fetch('http://localhost:8080/pet/trainPet', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`, // solo si se requiere
-        },
-        body: JSON.stringify({ durationInSeconds: seconds }),
-      });
+                    alert('🐉 Entrenamiento finalizado y mascota actualizada');
+                    } else {
+                    console.error('Error al actualizar la mascota');
+                    alert('❌ Error al actualizar la mascota');
+                    }
 
-      if (response.ok) {
-        const updatedPet = await response.json();
-        console.log('Mascota actualizada:', updatedPet);
-        alert('🐉 Entrenamiento finalizado y mascota actualizada');
-      } else {
-        console.error('Error al actualizar la mascota');
-        alert('❌ Error al actualizar la mascota');
-      }
-    } catch (error) {
-      console.error('Error en fetch:', error);
-      alert('❌ Error en la petición');
-    }
-  }}
-  disabled={!isRunning}
-  sx={{ px: 5, py: 1.8, fontSize: '1rem', fontWeight: 'bold' }}
->
-  Stop
-</Button>
-
-        </Box>
+                } catch (error) {
+                  console.error('Error en fetch:', error);
+                  alert('❌ Error en la petición');
+                }
+              }}
+              disabled={!isRunning}
+              sx={{
+                px: 5,
+                py: 2,
+                fontSize: '1.1rem',
+                fontWeight: 'bold',
+                borderRadius: 3,
+                flex: 1,
+                boxShadow: 3,
+                '&:hover': {
+                  backgroundColor: '#d32f2f',
+                },
+              }}
+              size="large"
+            >
+              Detener
+            </Button>
+          </Box>
+        </Paper>
       </Container>
     </Box>
   );
