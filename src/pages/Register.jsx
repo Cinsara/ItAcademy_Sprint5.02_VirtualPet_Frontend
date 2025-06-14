@@ -6,7 +6,14 @@ import {
   Paper,
   Link,
   Box,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Tooltip,
+  IconButton,
 } from '@mui/material';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
@@ -15,6 +22,7 @@ const Register = () => {
     email: '',
     password: '',
     weight: '',
+    bodyType: '',
   });
 
   const navigate = useNavigate();
@@ -34,6 +42,7 @@ const Register = () => {
           email: form.email,
           password: form.password,
           weight: parseFloat(form.weight),
+          bodyType: form.bodyType,
         }),
       });
 
@@ -51,15 +60,15 @@ const Register = () => {
 
   return (
     <Box
-  sx={{
-    height: '100vh',
-    width: '100vw',
-    background: 'linear-gradient(135deg, #f0f4f8, #dfe9f3)',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-  }}
->
+      sx={{
+        height: '100vh',
+        width: '100vw',
+        background: 'linear-gradient(135deg, #f0f4f8, #dfe9f3)',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    >
       <Paper
         elevation={4}
         sx={{
@@ -113,6 +122,41 @@ const Register = () => {
             onChange={handleChange}
             required
           />
+
+          {/* Body Type Select con explicación */}
+<FormControl fullWidth sx={{ mt: 2 }}>
+  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+    <Typography sx={{ fontSize: '0.9rem', fontWeight: 'bold' }}>
+      Body Type
+    </Typography>
+    <Tooltip
+      title={
+        <div>
+          <strong>Ectomorph:</strong> delgado, metabolismo rápido<br />
+          <strong>Mesomorph:</strong> atlético, gana músculo fácilmente<br />
+          <strong>Endomorph:</strong> gana grasa con facilidad
+        </div>
+      }
+      arrow
+    >
+      <IconButton size="small" sx={{ ml: 1, p: 0.5 }}>
+        <InfoOutlinedIcon fontSize="small" />
+      </IconButton>
+    </Tooltip>
+  </Box>
+  <Select
+    name="bodyType"
+    value={form.bodyType}
+    onChange={handleChange}
+    required
+  >
+    <MenuItem value="ECTOMORPH">Ectomorph</MenuItem>
+    <MenuItem value="MESOMORPH">Mesomorph</MenuItem>
+    <MenuItem value="ENDOMORPH">Endomorph</MenuItem>
+  </Select>
+</FormControl>
+
+
           <Button
             type="submit"
             fullWidth
@@ -134,5 +178,3 @@ const Register = () => {
 };
 
 export default Register;
-
-

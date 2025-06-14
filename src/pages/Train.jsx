@@ -19,6 +19,7 @@ const Train = () => {
   const [xp, setXp] = useState(0);
   const intervalRef = useRef(null);
   const [petData, setPetData] = useState(null);
+  const [trainingType, setTrainingType] = useState(null);
 
   useEffect(() => {
     const storedPet = localStorage.getItem('petData');
@@ -125,6 +126,71 @@ const Train = () => {
             </Box>
           )}
 
+          {/* Type of training - Improved version with hide during training */}
+          {!isRunning && (
+            <Box sx={{ width: '100%', mb: 3 }}>
+              <Typography 
+                variant="h5" 
+                sx={{ 
+                  mb: 2, 
+                  fontWeight: 'bold',
+                  color: '#2E7D32',
+                  fontFamily: 'Orbitron, sans-serif',
+                  textShadow: '1px 1px 2px rgba(0,0,0,0.1)',
+                }}
+              >
+                🏋️ Select Training Type
+              </Typography>
+              <Box sx={{ 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))',
+                gap: 2,
+              }}>
+                {[
+                  { type: 'CARDIO', emoji: '🏃', color: '#FF5252' },
+                  { type: 'STRENGTH', emoji: '💪', color: '#FF9800' },
+                  { type: 'YOGA', emoji: '🧘', color: '#4CAF50' },
+                  { type: 'HIIT', emoji: '🔥', color: '#F44336' },
+                  { type: 'FUN', emoji: '🎉', color: '#9C27B0' },
+                ].map((item) => (
+                  <Button
+                    key={item.type}
+                    variant={trainingType === item.type ? 'contained' : 'outlined'}
+                    onClick={() => setTrainingType(item.type)}
+                    sx={{
+                      py: 2,
+                      borderRadius: 3,
+                      borderWidth: 2,
+                      borderColor: item.color,
+                      backgroundColor: trainingType === item.type ? item.color : 'transparent',
+                      color: trainingType === item.type ? 'white' : item.color,
+                      fontWeight: 'bold',
+                      fontSize: '0.9rem',
+                      textTransform: 'none',
+                      transition: 'all 0.3s',
+                      '&:hover': {
+                        transform: 'translateY(-2px)',
+                        boxShadow: `0 4px 8px ${item.color}40`,
+                        borderWidth: 2,
+                        borderColor: item.color,
+                        backgroundColor: trainingType === item.type ? item.color : `${item.color}10`,
+                      },
+                    }}
+                  >
+                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                      <Typography sx={{ fontSize: '1.5rem', mb: 0.5 }}>
+                        {item.emoji}
+                      </Typography>
+                      <Typography>
+                        {item.type}
+                      </Typography>
+                    </Box>
+                  </Button>
+                ))}
+              </Box>
+            </Box>
+          )}
+
           {/* XP bar */}
           <Box sx={{ width: '100%', mt: 2 }}>
             <Typography 
@@ -162,7 +228,7 @@ const Train = () => {
                 setXp(0);
                 setIsRunning(true);
               }}
-              disabled={isRunning}
+                disabled={isRunning || !trainingType}
               sx={{
                 px: 5,
                 py: 2,
@@ -188,13 +254,17 @@ const Train = () => {
                 try {
                   const token = localStorage.getItem('token');
                   const response = await fetch('http://localhost:8080/pet/trainPet', {
-                    method: 'POST',
-                    headers: {
-                      'Content-Type': 'application/json',
-                      Authorization: `Bearer ${token}`,
-                    },
-                    body: JSON.stringify({ durationInSeconds: seconds }),
-                  });
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                  },
+                  body: JSON.stringify({
+                    durationInSeconds: seconds,
+                    type: trainingType
+                  }),
+                });
+
 
                   if (response.ok) {
                     const updatedPet = await response.json();
@@ -202,6 +272,7 @@ const Train = () => {
 
                     localStorage.setItem('petData', JSON.stringify(updatedPet));
                     setPetData(updatedPet);
+                    setTrainingType(null);
 
                     alert('🐉 Training completed and pet updated');
                     } else {
@@ -238,4 +309,4 @@ const Train = () => {
   );
 };
 
-export default Train;
+export default Train; 
