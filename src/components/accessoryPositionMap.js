@@ -50,7 +50,23 @@ const accessoryPositionMap = {
       width: '40%',
     }
   },
-  // más mascotas...
+  pet_bear: {
+    glasses: {
+      top: '20%',
+      left: '32%',
+      width: '40%',
+    },
+    hat: {
+      top: '8%',
+      left: '35%',
+      width: '40%',
+    },
+    teddy_bear: {
+      top: '55%',
+      left: '80%',
+      width: '40%',
+    }
+  },
 };
 
 export default accessoryPositionMap;

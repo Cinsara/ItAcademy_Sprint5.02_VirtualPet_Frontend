@@ -34,11 +34,11 @@ const Compete = () => {
         },
       });
 
-      if (!response.ok) throw new Error('Mascota no encontrada');
+      if (!response.ok) throw new Error('Pet not found');
       const data = await response.json();
       setPet(data);
     } catch (error) {
-      console.error('❌ Error al cargar mascota:', error);
+      console.error('❌ Error loading pet:', error);
     }
   };
 
@@ -62,9 +62,8 @@ const Compete = () => {
 
 
   const handleCompete = async () => {
-  console.log("🔁 Iniciando combate...");
   setLoading(true);
-  setResult(null); // Resetear resultado anterior
+  setResult(null);
   const token = localStorage.getItem('token');
 
   try {
@@ -73,21 +72,17 @@ const Compete = () => {
       headers: { Authorization: `Bearer ${token}` }
     });
 
-    if (!response.ok) throw new Error('❌ Error al iniciar la batalla');
+    if (!response.ok) throw new Error('❌ Error starting battle');
 
     const text = await response.text();
-    console.log("📃 Texto recibido del backend:", text);
 
     let gameData;
     try {
       gameData = JSON.parse(text);
     } catch (parseError) {
-      console.error("❌ Error al parsear JSON:", parseError);
-      alert("La respuesta del servidor no es válida.");
+      alert("The server response is not valid.");
       return;
     }
-
-    console.log("📦 Datos parseados:", gameData);
 
     if (gameData?.challenger) {
         setPet(gameData.challenger);
@@ -104,8 +99,8 @@ const Compete = () => {
     }
 
   } catch (error) {
-    console.error('❌ Error en la batalla:', error);
-    alert('❌ Error al competir');
+    console.error('❌ Error in battle:', error);
+    alert('❌ Error when competing');
   } finally {
     setLoading(false);
   }
@@ -123,7 +118,6 @@ const Compete = () => {
     pb: 4
   }}
 >
-
       <Navbar />
 
       <Box sx={{ maxWidth: 'lg', mx: 'auto', mt: 4, px: 2 }}>
@@ -141,9 +135,8 @@ const Compete = () => {
   />
 </Box>
 
-
         <Grid container spacing={3} justifyContent="center">
-          {/* Tu mascota */}
+          {/* Your pet */}
           <Grid item xs={12} md={5}>
   <Card sx={{ 
   height: '100%', 
@@ -278,15 +271,15 @@ const Compete = () => {
         >
           <img
   src={opponentPlaceholder}
-  alt="Oponente desconocido"
-  style={{ width: 500, opacity: 0.5, marginBottom: 16, marginTop: 80 }}
+  alt="Unknown opponent"
+  style={{ width: 500, opacity: 0.5, marginBottom: 16, marginTop: 100 }}
 />
           <Box sx={{ textAlign: 'center', mb: 9 }}>
   <Typography variant="h6" sx={{ color: '#fff', fontWeight: 'bold', display: 'block', mt: 12 }}>
-    Presiona "PELEAR!"
+    Press "FIGHT!"
   </Typography>
   <Typography variant="h6" sx={{ color: '#fff', mt: 1, display: 'block' }}>
-    para comenzar la batalla
+    to start the battle
   </Typography>
 </Box>
 
@@ -296,7 +289,7 @@ const Compete = () => {
   </Card>
 </Grid>
 
-          {/* Botón pelear - AHORA DEBAJO */}
+          {/* Fight button */}
           <Grid item xs={12} sx={{ mt: 3 }}>
             <Box sx={{ display: 'flex', justifyContent: 'center' }}>
               <Button
@@ -320,12 +313,12 @@ const Compete = () => {
                 }}
                 startIcon={<SportsMma />}
               >
-                {loading ? <CircularProgress size={24} color="inherit" /> : 'PELEAR!'}
+                {loading ? <CircularProgress size={24} color="inherit" /> : 'FIGHT!'}
               </Button>
             </Box>
           </Grid>
 
-          {/* Resultado */}
+          {/* Result */}
 {result?.gameResult && (
   <Grid item xs={12}>
     <Card sx={{ mt: 3, boxShadow: 3, borderRadius: 3 }}>
@@ -349,7 +342,7 @@ const Compete = () => {
         }}>
           <Typography variant="body1" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <MonetizationOn color="warning" sx={{ mr: 1 }} />
-            Ganaste: <Box component="span" fontWeight="bold" sx={{ ml: 1 }}>{result.coinsAwarded ?? 0} monedas</Box>
+            You won: <Box component="span" fontWeight="bold" sx={{ ml: 1 }}>{result.coinsAwarded ?? 0} diamonds</Box>
           </Typography>
         </Box>
       </CardContent>

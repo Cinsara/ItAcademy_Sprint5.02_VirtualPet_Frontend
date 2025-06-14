@@ -40,7 +40,7 @@ const Train = () => {
   }, [isRunning]);
 
   useEffect(() => {
-    if (seconds > 0 && seconds % 60 === 0) {
+    if (seconds > 0 && seconds % 10 === 0) { 
       setXp((prev) => Math.min(prev + 1, 100));
     }
   }, [seconds]);
@@ -100,7 +100,7 @@ const Train = () => {
               textShadow: '1px 1px 2px rgba(0,0,0,0.1)',
             }}
           >
-            {isRunning ? 'Entrenando...' : '¡Vamos a entrenar!'}
+            {isRunning ? 'Training...' : 'Lets train!'}
           </Typography>
 
           {isRunning && (
@@ -125,7 +125,7 @@ const Train = () => {
             </Box>
           )}
 
-          {/* Barra de XP mejorada */}
+          {/* XP bar */}
           <Box sx={{ width: '100%', mt: 2 }}>
             <Typography 
               variant="h6" 
@@ -135,7 +135,7 @@ const Train = () => {
                 color: '#333',
               }}
             >
-              Experiencia ganada: {xp} XP
+              Experience gained: {xp} XP
             </Typography>
             <LinearProgress
               variant="determinate"
@@ -153,7 +153,6 @@ const Train = () => {
             />
           </Box>
 
-          {/* Botones mejorados */}
           <Box sx={{ mt: 3, display: 'flex', gap: 3, width: '100%' }}>
             <Button
               variant="contained"
@@ -178,7 +177,7 @@ const Train = () => {
               }}
               size="large"
             >
-              Comenzar
+              Start
             </Button>
             <Button
               variant="contained"
@@ -199,21 +198,20 @@ const Train = () => {
 
                   if (response.ok) {
                     const updatedPet = await response.json();
-                    console.log('Mascota actualizada:', updatedPet);
+                    console.log('Updated pet:', updatedPet);
 
-                    // 🔁 ACTUALIZA EL LOCAL STORAGE Y EL ESTADO
                     localStorage.setItem('petData', JSON.stringify(updatedPet));
                     setPetData(updatedPet);
 
-                    alert('🐉 Entrenamiento finalizado y mascota actualizada');
+                    alert('🐉 Training completed and pet updated');
                     } else {
-                    console.error('Error al actualizar la mascota');
-                    alert('❌ Error al actualizar la mascota');
+                    console.error('EError updating pet');
+                    alert('❌ Error updating pet');
                     }
 
                 } catch (error) {
-                  console.error('Error en fetch:', error);
-                  alert('❌ Error en la petición');
+                  console.error('Error in fetch:', error);
+                  alert('❌ Request error');
                 }
               }}
               disabled={!isRunning}
@@ -231,7 +229,7 @@ const Train = () => {
               }}
               size="large"
             >
-              Detener
+              Stop
             </Button>
           </Box>
         </Paper>

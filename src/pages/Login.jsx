@@ -32,18 +32,13 @@ const Login = () => {
         const token = data.token;
         const pet = data.pet;
 
-        console.log("🐾 Mascota recibida directamente:", pet);
-
-        // Guarda en localStorage
         localStorage.setItem('token', token);
         localStorage.setItem('petData', JSON.stringify(pet));
 
-        // ⬇️ Detectar si es ADMIN desde el token
         const payload = JSON.parse(atob(token.split('.')[1]));
-        console.log('🔐 Payload del token:', payload); // <--- AÑADIDO
         const roles = payload.roles || [];
 
-        alert('Inicio de sesión correcto');
+        alert('Successful login!');
 
         // Redirigir según el rol
         if (roles.includes('ROLE_ADMIN')) {
@@ -52,11 +47,11 @@ const Login = () => {
           navigate('/home');
         }
       } else {
-        alert('Credenciales incorrectas');
+        alert('Incorrect credentials');
       }
     } catch (error) {
-      console.error('Error en el login:', error);
-      alert('Error al intentar iniciar sesión');
+      console.error('Login error:', error);
+      alert('Error trying to log in');
     }
   };
 
@@ -83,7 +78,7 @@ const Login = () => {
         }}
       >
         <Typography variant="h4" align="center" gutterBottom>
-          Iniciar sesión
+          Login
         </Typography>
         <form onSubmit={handleSubmit}>
           <TextField
@@ -97,7 +92,7 @@ const Login = () => {
           />
           <TextField
             fullWidth
-            label="Contraseña"
+            label="Password"
             name="password"
             type="password"
             value={form.password}
@@ -111,15 +106,15 @@ const Login = () => {
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
           >
-            Entrar
+            Enter
           </Button>
           <Typography align="center">
-            ¿No tienes cuenta?{' '}
+            Don't have an account?{' '}
             <Link
               onClick={() => navigate('/register')}
               sx={{ cursor: 'pointer' }}
             >
-              Regístrate aquí
+              Register here
             </Link>
           </Typography>
         </form>

@@ -31,8 +31,9 @@ const getBarColor = (label, value) => {
   return 'primary.main';
 };
 
-const StatBar = ({ label, value, unit = '' }) => {
+const StatBar = ({ label, value, unit = '', max = 100 }) => {
   const barColor = getBarColor(label, value);
+  const normalizedValue = Math.min((value / max) * 100, 100);
 
   return (
     <Box sx={{ mb: 2 }}>
@@ -44,7 +45,7 @@ const StatBar = ({ label, value, unit = '' }) => {
       </Box>
       <LinearProgress
         variant="determinate"
-        value={Math.min(value, 100)}
+        value={normalizedValue}
         sx={{
           height: 10,
           borderRadius: 5,
@@ -56,6 +57,7 @@ const StatBar = ({ label, value, unit = '' }) => {
     </Box>
   );
 };
+
 
 const Home = () => {
   const navigate = useNavigate();
@@ -87,7 +89,7 @@ const Home = () => {
       },
     });
 
-    if (!res.ok) throw new Error('No tiene mascota');
+    if (!res.ok) throw new Error('Doesnt have a pet');
 
     const data = await res.json();
     setHasPet(true);
@@ -121,12 +123,12 @@ const Home = () => {
         body: JSON.stringify({ petName, type: petToCreate }),
       });
 
-      if (!response.ok) throw new Error('No se pudo crear la mascota');
+      if (!response.ok) throw new Error('Could not create pet');
       await fetchPetData();
       setDialogOpen(false);
       setPetName('');
     } catch (error) {
-      console.error('Error al crear mascota:', error);
+      console.error('Error creating pet:', error);
     }
   };
 
@@ -139,12 +141,12 @@ const Home = () => {
         },
       });
 
-      if (!response.ok) throw new Error("No se pudo quitar el accesorio");
+      if (!response.ok) throw new Error("The accessory could not be removed");
 
       const updatedPet = await response.json();
       setPetData(updatedPet);
     } catch (error) {
-      console.error("❌ Error al quitar accesorio:", error);
+      console.error("Error removing accessory:", error);
     }
   };
 
@@ -173,13 +175,13 @@ const Home = () => {
   {loadingPet ? (
     <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
       <CircularProgress />
-      <Typography sx={{ mt: 2, ml: 2 }}>Cargando tu mascota...</Typography>
+      <Typography sx={{ mt: 2, ml: 2 }}>Loading your pet...</Typography>
     </Box>
   ) : !hasPet ? (
     <Box onClick={handleCreatePet} sx={{ cursor: 'pointer', textAlign: 'center' }}>
       <img src={eggImage} alt="Huevo" style={{ width: 'min(45vw, 500px)' }} />
       <Typography variant="h4" sx={{ mt: 2, fontWeight: 'bold' }}>
-        ¡Clica aquí para que nazca tu pet!
+        Click here to have your pet born!
       </Typography>
     </Box>
   ) : (
@@ -196,18 +198,18 @@ const Home = () => {
             <Typography variant="h6" sx={{ mb: 2, textAlign: 'center', fontWeight: 'bold' }}>
               {petData.name}
             </Typography>
-            <StatBar label="❤️ Felicidad" value={petData.happiness} />
-            <StatBar label="🩺 Salud" value={petData.health} />
-            <StatBar label="🍖 Hambre" value={petData.hunger} />
-            <StatBar label="💪 Fuerza" value={petData.strength} />
-            <StatBar label="🏆 Victorias" value={petData.victories} />
-            <StatBar label="⚖️ Peso" value={petData.weight} unit="kg" />
+            <StatBar label="❤️ Happiness" value={petData.happiness} />
+            <StatBar label="🩺 Health" value={petData.health} />
+            <StatBar label="🍖 Hunger" value={petData.hunger} />
+            <StatBar label="💪 Strength" value={petData.strength} />
+            <StatBar label="🏆 Victories" value={petData.victories} />
+            <StatBar label="⚖️ Weight" value={petData.weight} unit="kg" max={200} />
           </Paper>
 
           {petData?.accessories?.length > 0 && (
             <Box sx={{ mt: 3 }}>
               <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>
-                Accesorios equipados:
+                Equipped accessories:
               </Typography>
               {petData.accessories.map((acc) => (
                 <Box
@@ -226,7 +228,7 @@ const Home = () => {
                     color="error"
                     onClick={() => handleRemoveAccessory(acc.id)}
                   >
-                    Quitar
+                    Remove
                   </Button>
                 </Box>
               ))}
@@ -240,20 +242,20 @@ const Home = () => {
 
 
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
-        <DialogTitle>¡Ponle un nombre a tu mascota!</DialogTitle>
+        <DialogTitle>Give your pet a name!</DialogTitle>
         <DialogContent>
           <TextField
             autoFocus
             margin="dense"
-            label="Nombre de la mascota"
+            label="Pet name"
             fullWidth
             value={petName}
             onChange={(e) => setPetName(e.target.value)}
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setDialogOpen(false)}>Cancelar</Button>
-          <Button onClick={confirmPetCreation} disabled={!petName.trim()}>Confirmar</Button>
+          <Button onClick={() => setDialogOpen(false)}>Cancel</Button>
+          <Button onClick={confirmPetCreation} disabled={!petName.trim()}>Confirm</Button>
         </DialogActions>
       </Dialog>
     </Box>

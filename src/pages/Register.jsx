@@ -38,14 +38,14 @@ const Register = () => {
       });
 
       if (response.ok) {
-        alert('Usuario registrado correctamente');
+        alert('Successfully registered user');
         navigate('/');
       } else {
-        alert('Error al registrar el usuario');
+        alert('Error registering user');
       }
     } catch (error) {
-      console.error('Error en el registro:', error);
-      alert('Ocurrió un error en el servidor');
+      console.error('Error in registration:', error);
+      alert('An error occurred on the server');
     }
   };
 
@@ -77,7 +77,7 @@ const Register = () => {
           <TextField
             margin="normal"
             fullWidth
-            label="Nombre de usuario"
+            label="User name"
             name="username"
             value={form.username}
             onChange={handleChange}
@@ -95,7 +95,7 @@ const Register = () => {
           <TextField
             margin="normal"
             fullWidth
-            label="Contraseña"
+            label="Password"
             name="password"
             type="password"
             value={form.password}
@@ -105,7 +105,7 @@ const Register = () => {
           <TextField
             margin="normal"
             fullWidth
-            label="Peso (kg)"
+            label="Weight (kg)"
             name="weight"
             type="number"
             inputProps={{ min: 0, step: 0.1 }}
@@ -119,12 +119,12 @@ const Register = () => {
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
           >
-            Registrarse
+            Register
           </Button>
           <Typography align="center">
-            ¿Ya tienes cuenta?{' '}
+            Already have an account?{' '}
             <Link onClick={() => navigate('/')} sx={{ cursor: 'pointer' }}>
-              Inicia sesión aquí
+              Log in here
             </Link>
           </Typography>
         </form>

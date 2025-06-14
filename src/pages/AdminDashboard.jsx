@@ -34,7 +34,6 @@ const AdminDashboard = () => {
 
   const token = localStorage.getItem('token');
 
-  // Función para alternar la expansión de un usuario
   const toggleUserExpand = (userId) => {
     setExpandedUsers(prev => ({
       ...prev,
@@ -69,7 +68,7 @@ const AdminDashboard = () => {
           })
         ]);
         
-        if (!usersRes.ok || !petsRes.ok) throw new Error('Error al cargar datos');
+        if (!usersRes.ok || !petsRes.ok) throw new Error('Error loading data');
         
         const usersData = await usersRes.json();
         const petsData = await petsRes.json();
@@ -77,7 +76,6 @@ const AdminDashboard = () => {
         setUsers(usersData);
         setPets(petsData);
 
-        // Inicializar estado de expansión para cada usuario
         const initialExpanded = {};
         usersData.forEach(user => {
           initialExpanded[user.id] = false;
@@ -93,7 +91,6 @@ const AdminDashboard = () => {
     fetchData();
   }, [authorized]);
 
-  // Obtener mascotas de un usuario específico
   const getUserPets = (userId) => {
     return pets.filter(pet => pet.ownerId === userId);
   };
@@ -121,10 +118,10 @@ const AdminDashboard = () => {
           });
         })
       );
-      setSuccess('Usuarios actualizados correctamente');
+      setSuccess('Users updated successfully');
       setEditedUsers([]);
     } catch (err) {
-      setError('Error al guardar usuarios');
+      setError('Error saving users');
     } finally {
       setLoading(false);
       setTimeout(() => setSuccess(null), 3000);
@@ -148,10 +145,10 @@ const AdminDashboard = () => {
           });
         })
       );
-      setSuccess('Mascotas actualizadas correctamente');
+      setSuccess('Pets updated successfully');
       setEditedPets([]);
     } catch (err) {
-      setError('Error al guardar mascotas');
+      setError('Error saving pets');
     } finally {
       setLoading(false);
       setTimeout(() => setSuccess(null), 3000);
@@ -178,7 +175,7 @@ const AdminDashboard = () => {
 
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(errorText || `Error al eliminar ${type}`);
+        throw new Error(errorText || `Delete error ${type}`);
       }
 
       if (type === 'user') {
@@ -192,11 +189,11 @@ const AdminDashboard = () => {
         setPets(prevPets => prevPets.filter(pet => pet.id !== id));
       }
       
-      setSuccess(`${type === 'user' ? 'Usuario' : 'Mascota'} eliminado(a) correctamente`);
+      setSuccess(`${type === 'user' ? 'User' : 'Pet'} successfully deleted`);
       setDeleteDialog({ open: false, type: null, id: null });
     } catch (err) {
-      setError(`Error al eliminar ${deleteDialog.type === 'user' ? 'usuario' : 'mascota'}: ${err.message}`);
-      console.error('Error en handleDelete:', err);
+      setError(`Delete error ${deleteDialog.type === 'user' ? 'user' : 'pet'}: ${err.message}`);
+      console.error('Error in handleDelete:', err);
     } finally {
       setLoading(false);
       setTimeout(() => setSuccess(null), 3000);
@@ -212,7 +209,7 @@ const AdminDashboard = () => {
         headers: { Authorization: 'Bearer ' + token }
       });
       
-      if (!response.ok) throw new Error('Error al ascender usuario');
+      if (!response.ok) throw new Error('Error when promoting user');
       
       setUsers(users.map(user => 
         user.id === promoteDialog.userId 
@@ -220,7 +217,7 @@ const AdminDashboard = () => {
           : user
       ));
       
-      setSuccess(`Usuario ${promoteDialog.username} ascendido a administrador`);
+      setSuccess(`User ${promoteDialog.username} promoted to administrator`);
       setPromoteDialog({ open: false, userId: null, username: '' });
     } catch (err) {
       setError(err.message);
@@ -257,8 +254,8 @@ const AdminDashboard = () => {
     return (
       <Container maxWidth="sm" sx={{ mt: 10, textAlign: 'center' }}>
         <Alert severity="error" sx={{ mb: 3 }}>
-          <Typography variant="h6">Acceso denegado</Typography>
-          <Typography>No tienes permisos para acceder a esta página</Typography>
+          <Typography variant="h6">Access denied</Typography>
+          <Typography>You do not have permission to access this page</Typography>
         </Alert>
         <Button 
           variant="contained" 
@@ -266,7 +263,7 @@ const AdminDashboard = () => {
           onClick={() => window.location.href = '/'}
           startIcon={<Logout />}
         >
-          Volver al inicio
+          Back to top
         </Button>
       </Container>
     );
@@ -277,14 +274,14 @@ const AdminDashboard = () => {
       <AppBar position="sticky" color="primary" elevation={1}>
         <Toolbar>
           <AdminPanelSettings sx={{ mr: 2 }} />
-          <Typography variant="h6" sx={{ flexGrow: 1 }}>Panel de Administración</Typography>
+          <Typography variant="h6" sx={{ flexGrow: 1 }}>Administration Panel</Typography>
           <Button 
             color="inherit" 
             onClick={handleLogout}
             startIcon={<Logout />}
             sx={{ textTransform: 'none' }}
           >
-            Cerrar sesión
+            Sign out
           </Button>
         </Toolbar>
         <Tabs 
@@ -322,7 +319,7 @@ const AdminDashboard = () => {
           <Box>
             <Stack direction="row" justifyContent="space-between" alignItems="center" mb={3}>
               <Typography variant="h4" sx={{ color: 'text.primary' }}>
-                Gestión de Usuarios
+                User Management
               </Typography>
               <Button 
                 variant="contained" 
@@ -334,7 +331,7 @@ const AdminDashboard = () => {
                   '&:hover': { bgcolor: deepPurple[700] }
                 }}
               >
-                Guardar Cambios
+                Save Changes
               </Button>
             </Stack>
             
@@ -342,12 +339,12 @@ const AdminDashboard = () => {
               <Table>
                 <TableHead>
                   <TableRow sx={{ bgcolor: theme.palette.mode === 'dark' ? 'grey.800' : 'grey.100' }}>
-                    <TableCell sx={{ fontWeight: 'bold' }}>Usuario</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold' }}>User</TableCell>
                     <TableCell sx={{ fontWeight: 'bold' }}>Email</TableCell>
                     <TableCell sx={{ fontWeight: 'bold' }}>Rol</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold' }}>Diamantes</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold' }}>Mascotas</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold' }}>Acciones</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold' }}>Diamonds</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold' }}>Pets</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold' }}>Actions</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -408,17 +405,17 @@ const AdminDashboard = () => {
                             <Collapse in={expandedUsers[user.id]} timeout="auto" unmountOnExit>
                               <Box sx={{ margin: 1 }}>
                                 <Typography variant="subtitle1" gutterBottom>
-                                  Mascotas de {user.username}
+                                  Pets of {user.username}
                                 </Typography>
                                 {userPets.length > 0 ? (
                                   <Table size="small">
                                     <TableHead>
                                       <TableRow>
-                                        <TableCell>Nombre</TableCell>
-                                        <TableCell>Tipo</TableCell>
-                                        <TableCell>Salud</TableCell>
-                                        <TableCell>Hambre</TableCell>
-                                        <TableCell>Felicidad</TableCell>
+                                        <TableCell>Name</TableCell>
+                                        <TableCell>Type</TableCell>
+                                        <TableCell>Health</TableCell>
+                                        <TableCell>Hunger</TableCell>
+                                        <TableCell>Happiness</TableCell>
                                       </TableRow>
                                     </TableHead>
                                     <TableBody>
@@ -444,7 +441,7 @@ const AdminDashboard = () => {
                                   </Table>
                                 ) : (
                                   <Typography variant="body2" color="text.secondary">
-                                    Este usuario no tiene mascotas
+                                    This user has no pets
                                   </Typography>
                                 )}
                               </Box>
@@ -464,7 +461,7 @@ const AdminDashboard = () => {
           <Box>
             <Stack direction="row" justifyContent="space-between" alignItems="center" mb={3}>
               <Typography variant="h4" sx={{ color: 'text.primary' }}>
-                Gestión de Mascotas
+                Pet Management
               </Typography>
               <Button 
                 variant="contained" 
@@ -476,7 +473,7 @@ const AdminDashboard = () => {
                   '&:hover': { bgcolor: teal[700] }
                 }}
               >
-                Guardar Cambios
+                Save Changes
               </Button>
             </Stack>
             
@@ -484,15 +481,15 @@ const AdminDashboard = () => {
               <Table>
                 <TableHead>
                   <TableRow sx={{ bgcolor: theme.palette.mode === 'dark' ? 'grey.800' : 'grey.100' }}>
-                    <TableCell sx={{ fontWeight: 'bold' }}>Nombre</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold' }}>Tipo</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold' }}>Dueño</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold' }}>Peso</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold' }}>Fuerza</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold' }}>Salud</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold' }}>Hambre</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold' }}>Felicidad</TableCell>
-                    <TableCell sx={{ fontWeight: 'bold' }}>Acciones</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold' }}>Name</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold' }}>Type</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold' }}>Owner</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold' }}>Weight</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold' }}>Strength</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold' }}>Health</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold' }}>Hunger</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold' }}>Happiness</TableCell>
+                    <TableCell sx={{ fontWeight: 'bold' }}>Actions</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -534,7 +531,7 @@ const AdminDashboard = () => {
                             />
                           ) : (
                             <Typography variant="body2" color="text.secondary">
-                              Sin dueño
+                              Ownerless
                             </Typography>
                           )}
                         </TableCell>
@@ -659,7 +656,7 @@ const AdminDashboard = () => {
               <ListItemIcon>
                 <Upgrade fontSize="small" />
               </ListItemIcon>
-              <ListItemText>Ascender a Admin</ListItemText>
+              <ListItemText>Promote to Admin</ListItemText>
             </MenuItem>
             <MenuItem 
               onClick={() => {
@@ -671,7 +668,7 @@ const AdminDashboard = () => {
               <ListItemIcon sx={{ color: red[500] }}>
                 <Delete fontSize="small" />
               </ListItemIcon>
-              <ListItemText>Eliminar Usuario</ListItemText>
+              <ListItemText>Delete User</ListItemText>
             </MenuItem>
           </>
         )}
@@ -686,7 +683,7 @@ const AdminDashboard = () => {
             <ListItemIcon sx={{ color: red[500] }}>
               <Delete fontSize="small" />
             </ListItemIcon>
-            <ListItemText>Eliminar Mascota</ListItemText>
+            <ListItemText>Delete Pet</ListItemText>
           </MenuItem>
         )}
       </Menu>
@@ -698,11 +695,11 @@ const AdminDashboard = () => {
       >
         <DialogTitle>
           <Warning color="error" sx={{ verticalAlign: 'middle', mr: 1 }} />
-          Confirmar eliminación
+          Confirm deletion
         </DialogTitle>
         <DialogContent>
           <Typography>
-            ¿Estás seguro que deseas eliminar este {deleteDialog.type}? Esta acción no se puede deshacer.
+            Are you sure you want to delete this {deleteDialog.type}? This action cannot be undone.
           </Typography>
         </DialogContent>
         <DialogActions>
@@ -710,7 +707,7 @@ const AdminDashboard = () => {
             onClick={() => setDeleteDialog({ open: false, type: null, id: null })}
             startIcon={<Close />}
           >
-            Cancelar
+            Cancel
           </Button>
           <Button 
             onClick={handleDelete}
@@ -719,26 +716,25 @@ const AdminDashboard = () => {
             startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <Delete />}
             disabled={loading}
           >
-            Eliminar
+            Eliminate
           </Button>
         </DialogActions>
       </Dialog>
 
-      {/* Diálogo de confirmación para ascender a admin */}
       <Dialog
         open={promoteDialog.open}
         onClose={() => setPromoteDialog({ open: false, userId: null, username: '' })}
       >
         <DialogTitle>
           <Upgrade color="primary" sx={{ verticalAlign: 'middle', mr: 1 }} />
-          Ascender a Administrador
+          Promote to Administrator
         </DialogTitle>
         <DialogContent>
           <Typography>
-            ¿Estás seguro que deseas ascender al usuario <strong>{promoteDialog.username}</strong> a administrador?
+            Are you sure you want to promote the user <strong>{promoteDialog.username}</strong> to administrator?
           </Typography>
           <Alert severity="warning" sx={{ mt: 2 }}>
-            Este usuario tendrá acceso completo al panel de administración.
+            This user will have full access to the administration panel.
           </Alert>
         </DialogContent>
         <DialogActions>
@@ -746,7 +742,7 @@ const AdminDashboard = () => {
             onClick={() => setPromoteDialog({ open: false, userId: null, username: '' })}
             startIcon={<Close />}
           >
-            Cancelar
+            Cancel
           </Button>
           <Button 
             onClick={handlePromoteUser}
@@ -755,7 +751,7 @@ const AdminDashboard = () => {
             startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <Check />}
             disabled={loading}
           >
-            Confirmar
+            Confirm
           </Button>
         </DialogActions>
       </Dialog>
