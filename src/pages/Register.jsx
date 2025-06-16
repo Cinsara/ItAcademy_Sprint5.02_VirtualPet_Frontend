@@ -80,7 +80,7 @@ const Register = () => {
         }}
       >
         <Typography variant="h4" align="center" gutterBottom>
-          Registro
+          Register
         </Typography>
         <form onSubmit={handleSubmit}>
           <TextField
@@ -132,9 +132,9 @@ const Register = () => {
     <Tooltip
       title={
         <div>
-          <strong>Ectomorph:</strong> delgado, metabolismo rápido<br />
-          <strong>Mesomorph:</strong> atlético, gana músculo fácilmente<br />
-          <strong>Endomorph:</strong> gana grasa con facilidad
+          <strong>Ectomorph:</strong> thin, fast metabolism<br />
+          <strong>Mesomorph:</strong> athletic, gains muscle easily<br />
+          <strong>Endomorph:</strong> gain fat easily
         </div>
       }
       arrow

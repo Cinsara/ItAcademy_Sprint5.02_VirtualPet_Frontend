@@ -28,7 +28,6 @@ const Shop = () => {
 
   console.log("🔐 Token enviado:", token);
 
-  // ✅ Cargar ítems desde el backend
   fetch('http://localhost:8080/shop/items', {
     headers: {
       'Authorization': `Bearer ${token}`
@@ -47,7 +46,7 @@ const Shop = () => {
     price: f.price,
     type: 'food',
     rarity: f.happinessChange > 10 ? 'Junk' : 'Healthy',
-    image: f.imageUrl // Asegúrate que esto no es undefined
+    image: f.imageUrl
   })) : []),
 
   ...(Array.isArray(data.accessories) ? data.accessories.map(a => ({
@@ -57,14 +56,13 @@ const Shop = () => {
     price: a.price,
     type: 'accessory',
     rarity: 'Fashion',
-    image: a.imageUrl // Asegúrate que esto existe
+    image: a.imageUrl
   })) : [])
 ];
       setItems(formattedItems);
     })
     .catch(err => console.error('❌ Error fetching shop items:', err));
 
-  // ✅ Cargar diamantes
   fetch('http://localhost:8080/user/diamonds', {
     headers: {
       'Content-Type': 'application/json',
@@ -116,7 +114,6 @@ const Shop = () => {
   const updatedPet = await response.json();
   setPetData(updatedPet);
 
-  // 🔄 Nueva petición para obtener los diamantes actualizados
   const diamondsResponse = await fetch('http://localhost:8080/user/diamonds', {
     method: 'GET',
     headers: {
@@ -349,7 +346,7 @@ const Shop = () => {
                 <StatItem icon="🏆" label="Victories" value={petData?.victories ?? '-'} />
               </Box>
               
-              {/* Diamonds Section - Sin fondo azul */}
+              {/* Diamonds Section */}
               <Box 
                 sx={{ 
                   p: 2, 
@@ -387,7 +384,6 @@ const Shop = () => {
   );
 };
 
-// Componente auxiliar para mostrar estadísticas
 const StatItem = ({ icon, label, value }) => (
   <Box>
     <Typography variant="body2" sx={{ color: 'text.secondary', display: 'flex', alignItems: 'center', gap: 0.5 }}>

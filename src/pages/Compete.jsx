@@ -187,7 +187,7 @@ const Compete = () => {
             </Card>
           </Grid>
 
-          {/* Oponente */}
+          {/* Oponent */}
 <Grid item xs={12} md={5}>
     <Card sx={{ 
   height: '100%', 

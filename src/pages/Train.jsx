@@ -126,7 +126,7 @@ const Train = () => {
             </Box>
           )}
 
-          {/* Type of training - Improved version with hide during training */}
+          {/* Type of training */}
           {!isRunning && (
             <Box sx={{ width: '100%', mb: 3 }}>
               <Typography 

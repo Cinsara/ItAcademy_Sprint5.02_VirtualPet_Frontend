@@ -40,7 +40,6 @@ const Login = () => {
 
         alert('Successful login!');
 
-        // Redirigir según el rol
         if (roles.includes('ROLE_ADMIN')) {
           navigate('/admin');
         } else {
